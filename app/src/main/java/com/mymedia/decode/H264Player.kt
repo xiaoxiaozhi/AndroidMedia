@@ -1,10 +1,12 @@
 package com.mymedia.decode
 
+import android.content.res.Resources
 import android.media.MediaCodec
 import android.media.MediaCodec.BUFFER_FLAG_END_OF_STREAM
 import android.media.MediaFormat
 import android.view.Surface
 import java.io.File
+import java.io.InputStream
 import java.nio.channels.FileChannel
 
 /**
@@ -12,7 +14,9 @@ import java.nio.channels.FileChannel
  * 异步 先 asynchronousDecodeH264() 后mediaCodec.start()
  * A resource failed to call close. 报错可能跟mediacodec的状态没有重置有关系
  */
-class H264Player(private val path: File, private val surface: Surface) : Runnable {
+//class H264Player(private val path: File, private val surface: Surface) : Runnable {
+class H264Player(private val resource: InputStream, private val surface: Surface) : Runnable {
+
     //MediaCodec.createByCodecName() 这个创建方式是干嘛的？？？
     private val mediaCodec: MediaCodec by lazy { MediaCodec.createDecoderByType(MediaFormat.MIMETYPE_VIDEO_AVC) }//如果设备不支持，这里会报错，TODO 用模拟器试试会不会报错
     private val mediaFormat: MediaFormat by lazy {
@@ -23,12 +27,13 @@ class H264Player(private val path: File, private val surface: Surface) : Runnabl
     }
     private val resourceByteArray by lazy {
         println("初始化----resourceByteArray")
-        val byteBuffer = path.inputStream().channel.run {
-            map(FileChannel.MapMode.READ_ONLY, 0, size())
-        }
-        val byteArray = ByteArray(byteBuffer.capacity())
-        byteBuffer.get(byteArray, 0, byteBuffer.capacity())
-        byteArray
+       resource.readBytes()
+//        val byteBuffer = path.inputStream().channel.run {
+//            map(FileChannel.MapMode.READ_ONLY, 0, size())
+//        }
+//        val byteArray = ByteArray(byteBuffer.capacity())
+//        byteBuffer.get(byteArray, 0, byteBuffer.capacity())
+//        byteArray
     }
 
     init {

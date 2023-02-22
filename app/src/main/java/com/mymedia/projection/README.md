@@ -1,0 +1,2 @@
+client包的SendActivity是发送端
+receive包的ReceiveActivity是接收端

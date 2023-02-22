@@ -5,13 +5,14 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import dagger.hilt.android.HiltAndroidApp
 
 
-
+@HiltAndroidApp
 class MyApplication : Application()
 //    , CameraXConfig.Provider
 {
-//    lateinit var component: MyComponent
+    //    lateinit var component: MyComponent
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()

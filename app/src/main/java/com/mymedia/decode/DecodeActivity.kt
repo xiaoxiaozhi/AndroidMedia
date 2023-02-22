@@ -1,5 +1,6 @@
 package com.mymedia.decode
 
+import android.content.res.Resources
 import android.media.MediaCodecInfo
 import android.media.MediaCodecList
 import android.media.MediaFormat
@@ -37,8 +38,6 @@ import java.nio.channels.FileChannel
  */
 class DecodeActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
-
-
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,8 +47,9 @@ class DecodeActivity : AppCompatActivity() {
         binding.surface.holder.addCallback(object : SurfaceHolder.Callback {
             override fun surfaceCreated(holder: SurfaceHolder) {
                 println("surfaceCreated-------------------")
-                H264Player(File(filesDir, "out.h264"), holder.surface).play()
-//                H264Player1(File(filesDir, "out.h264").absolutePath, holder.surface).play()
+                val inputStream = resources.openRawResource(R.raw.out)
+                H264Player(inputStream, holder.surface).play()
+//                H264Player1(File(filesDir, "out.h264"), holder.surface).play()
             }
 
             override fun surfaceChanged(
