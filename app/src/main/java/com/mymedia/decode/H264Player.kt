@@ -1,13 +1,10 @@
 package com.mymedia.decode
 
-import android.content.res.Resources
 import android.media.MediaCodec
 import android.media.MediaCodec.BUFFER_FLAG_END_OF_STREAM
 import android.media.MediaFormat
 import android.view.Surface
-import java.io.File
 import java.io.InputStream
-import java.nio.channels.FileChannel
 
 /**
  * 同步 先 mediaCodec.start()       后synchronousDecodeH264()
@@ -16,6 +13,7 @@ import java.nio.channels.FileChannel
  */
 //class H264Player(private val path: File, private val surface: Surface) : Runnable {
 class H264Player(private val resource: InputStream, private val surface: Surface) : Runnable {
+    private var frameIndex = 0L
 
     //MediaCodec.createByCodecName() 这个创建方式是干嘛的？？？
     private val mediaCodec: MediaCodec by lazy { MediaCodec.createDecoderByType(MediaFormat.MIMETYPE_VIDEO_AVC) }//如果设备不支持，这里会报错，TODO 用模拟器试试会不会报错
@@ -23,11 +21,12 @@ class H264Player(private val resource: InputStream, private val surface: Surface
         //解码宽高好像随便写，因为宽高信息都保存在h264中
         MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, 368, 368).apply {
             setInteger(MediaFormat.KEY_FRAME_RATE, 15)// 管用吗？？？
+//            setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420SemiPlanar)
         }
     }
     private val resourceByteArray by lazy {
         println("初始化----resourceByteArray")
-       resource.readBytes()
+        resource.readBytes()
 //        val byteBuffer = path.inputStream().channel.run {
 //            map(FileChannel.MapMode.READ_ONLY, 0, size())
 //        }
@@ -85,12 +84,13 @@ class H264Player(private val resource: InputStream, private val surface: Surface
                 val length = nextIndex - startIndex
                 println("nextIndex----($nextIndex) startIndex------($startIndex) length-----($length)")
                 inputBuffer?.put(resourceByteArray, startIndex, length)
-                codec.queueInputBuffer(index, 0, length, 0, 0);
+                codec.queueInputBuffer(index, 0, length, computePresentationTime(frameIndex), 0);
 //                }
 
 
                 startIndex = nextIndex
                 MediaCodec.CONFIGURE_FLAG_ENCODE
+                frameIndex++
             }
 
             override fun onOutputBufferAvailable(
@@ -153,5 +153,9 @@ class H264Player(private val resource: InputStream, private val surface: Surface
             }
         }
         return -1
+    }
+
+    private fun computePresentationTime(frameIndex: Long): Long {
+        return frameIndex * 1000000 / 15
     }
 }

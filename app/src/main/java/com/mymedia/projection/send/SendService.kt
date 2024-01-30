@@ -14,6 +14,7 @@ import com.mymedia.CHANNEL_ID
 import com.mymedia.R
 import com.mymedia.projection.send.SendActivity.Companion.STATUS_OPEN
 import com.mymedia.projection.send.SendActivity.Companion.STATUS_TEST
+import com.mymedia.web.SocketManager
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

@@ -2,16 +2,13 @@ package com.mymedia.projection.send
 
 import android.hardware.display.DisplayManager
 import android.media.MediaCodec
-import android.media.MediaCodec.Callback
 import android.media.MediaCodecInfo
 import android.media.MediaFormat
 import android.media.projection.MediaProjection
 import android.util.Log
-import java.io.File
+import com.mymedia.web.SocketManager
 import java.lang.Byte
 import java.nio.ByteBuffer
-import kotlin.concurrent.thread
-import kotlin.experimental.and
 
 class H264Record(
     private val mediaProjection: MediaProjection,
@@ -60,6 +57,8 @@ class H264Record(
                         Log.i("H264Record", "优先级----${(nal.toInt() shr 5) and 0x06}")
                         val type = nal.toInt() and 0x1f
                         Log.i(TAG, "frame type ${type}")
+                        //sps_pps [0, 0, 0, 1, 67, 64, 0, a, -54, -4c, 3, -40, 11, 3f, 2c, -54, 14, 18, 14, 1b, 42, -7c, -2c, 0, 0, 0, 1, 68, -12, 6, -e, -40]
+                        //sps和pps放在一起返回，所以这里只需要判断同sps就可以
                         if (type == 7) {
                             sps_pps_buffer = ByteArray(limit())
                             get(sps_pps_buffer)

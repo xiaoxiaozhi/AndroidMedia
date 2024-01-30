@@ -2,12 +2,11 @@ package com.mymedia.record
 
 import android.hardware.display.DisplayManager
 import android.media.MediaCodec
-import android.media.MediaCodec.Callback
 import android.media.MediaCodecInfo
 import android.media.MediaFormat
 import android.media.projection.MediaProjection
+import com.mymedia.FileUtils
 import java.io.File
-import kotlin.concurrent.thread
 
 class H264Encode(
     private val mediaProjection: MediaProjection,
@@ -58,7 +57,7 @@ class H264Encode(
                     )//kotlin扩展函数进制转换
                     outFile.appendBytes(array)//TODO 本来是想用 channel的但是还不会channel续写模式
 //                    outTxt.appendText(array.map { it.toString(16) }.toList().toString())
-                    FileUtils.writeContent(array, outTxt.absolutePath)
+                    FileUtils.writeContent(array, outTxt)
                     mediaCodec.releaseOutputBuffer(index, false)
                 } ?: println("mediaCodec.getOutputBuffer is null--------------------")
             }

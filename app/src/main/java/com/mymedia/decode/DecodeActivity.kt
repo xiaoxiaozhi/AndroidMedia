@@ -38,10 +38,13 @@ import java.nio.channels.FileChannel
  */
 class DecodeActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
+
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = setContentView(this, R.layout.activity_main)
+        MediaCodecInfo.CodecCapabilities.COLOR_Format24bitBGR888
+
 
         //想用cameraX里面的Preview代替，发现不可以
         binding.surface.holder.addCallback(object : SurfaceHolder.Callback {
@@ -66,40 +69,6 @@ class DecodeActivity : AppCompatActivity() {
             }
 
         })
-
-//        mediaCodecInfo()
-    }
-
-    /**
-     * 打印所有编解码器的基本信息
-     */
-    @RequiresApi(Build.VERSION_CODES.Q)
-    private fun mediaCodecInfo() {
-        MediaCodecList(MediaCodecList.ALL_CODECS).codecInfos
-            .filter { !it.isAlias }//过滤掉是别名的编码器
-            .forEach {
-                println("编解码器名称-------${it.canonicalName}")
-                println("编解码器别名-------${it.name}")//设备实现可以为相同的底层编解码器提供多个别名
-                println("编解码器支持的媒体类型-----${it.supportedTypes.toList()}")
-                println("是否是别名---------${it.isAlias}")
-                println("是否是编码器---------${it.isEncoder}")
-                println("是否支持硬件加速-----_${it.isHardwareAccelerated}")//硬件制造商提供，不能保证与真实情况相符
-                println("编解码器是否是软件实现--${it.isSoftwareOnly}")//软编解码器更安全但不保证性能
-                println("编解码器Android提供还是设备制造商----${if (it.isVendor) "device manufacturer" else "Android"}")
-                println("----------------------------------------------")
-            }
-    }
-
-    /**
-     * 得到MediaCodecInfo.canonicalName作为参数创建 MediaCodec.createByCodecName(name) 感觉这种方式繁琐，不如直接利用MIME值创建
-     */
-    private fun selectCodec(mimeType: String): MediaCodecInfo? {
-        return MediaCodecList(MediaCodecList.ALL_CODECS).codecInfos
-            .filter { it.isEncoder }
-            .filter { it.supportedTypes.contains(mimeType) }
-            .takeIf {
-                it.isNotEmpty()
-            }?.first()
     }
 
 }
